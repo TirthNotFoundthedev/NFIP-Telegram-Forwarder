@@ -28,6 +28,9 @@ app = FastAPI()
 # Determine the correct path for templates
 if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
+    # Fix for uvicorn/isatty crash in --noconsole mode
+    if sys.stdout is None: sys.stdout = open(os.devnull, "w")
+    if sys.stderr is None: sys.stderr = open(os.devnull, "w")
 else:
     base_path = os.path.dirname(os.path.abspath(__file__))
 

@@ -8,13 +8,21 @@ if os.path.exists(".env"):
     load_dotenv()
 
 class Config:
-    # --- HARDCODED TELEGRAM KEYS (Standard Practice) ---
-    _ENC_ID = "Mjc4ODE4ODk=" # Change this to: base64.b64encode(str(YOUR_ID).encode()).decode()
-    _ENC_HASH = "YWFlMzI2MjliMTNjNzAzOTRjNTIwMTUwMTAzODdmYmQ=" # Change this to: base64.b64encode(YOUR_HASH.encode()).decode()
+    # --- HARDCODED TELEGRAM KEYS ---
+    # Replace these with your actual Base64 values ONLY when building the EXE locally.
+    # Do NOT commit your real keys to GitHub.
+    _ENC_ID = "YOUR_BASE64_ID_HERE" 
+    _ENC_HASH = "YOUR_BASE64_HASH_HERE" 
     
-    API_ID = os.getenv("API_ID") or int(base64.b64decode(_ENC_ID).decode())
-    API_HASH = os.getenv("API_HASH") or base64.b64decode(_ENC_HASH).decode()
-    # ---------------------------------------------------
+    # Logic to prioritize .env, then fall back to hardcoded obfuscated keys
+    API_ID = os.getenv("API_ID")
+    if not API_ID and _ENC_ID != "YOUR_BASE64_ID_HERE":
+        API_ID = int(base64.b64decode(_ENC_ID).decode())
+    
+    API_HASH = os.getenv("API_HASH")
+    if not API_HASH and _ENC_HASH != "YOUR_BASE64_HASH_HERE":
+        API_HASH = base64.b64decode(_ENC_HASH).decode()
+    # --------------------------------
 
     SESSION_NAME = os.getenv("SESSION_NAME", "nfip_forwarder")
     TELE_BOT_TOKEN = os.getenv("TELE_BOT_TOKEN")
@@ -36,7 +44,6 @@ class Config:
             if not p:
                 continue
             
-            # Try to convert to int (for IDs like -100xxx)
             try:
                 if p.startswith("-"):
                      peers.append(int(p))
@@ -53,11 +60,9 @@ class Config:
         missing = []
         if not cls.API_ID: missing.append("API_ID")
         if not cls.API_HASH: missing.append("API_HASH")
-        # Optional: check NFIP tokens if you want them required at startup
-        # if not cls.NFIP_CLIENT_TOKEN: missing.append("NFIP_CLIENT_TOKEN")
         
         if missing:
-            raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
+            raise ValueError(f"Missing required environment variables or hardcoded keys: {', '.join(missing)}")
         
         try:
             cls.API_ID = int(cls.API_ID)
