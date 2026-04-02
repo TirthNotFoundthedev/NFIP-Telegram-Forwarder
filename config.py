@@ -1,12 +1,21 @@
 import os
+import base64
 from typing import List, Union
 from dotenv import load_dotenv
 
-load_dotenv()
+# Make .env optional (don't crash if it doesn't exist)
+if os.path.exists(".env"):
+    load_dotenv()
 
 class Config:
-    API_ID = os.getenv("API_ID")
-    API_HASH = os.getenv("API_HASH")
+    # --- HARDCODED TELEGRAM KEYS (Standard Practice) ---
+    _ENC_ID = "Mjc4ODE4ODk=" # Change this to: base64.b64encode(str(YOUR_ID).encode()).decode()
+    _ENC_HASH = "YWFlMzI2MjliMTNjNzAzOTRjNTIwMTUwMTAzODdmYmQ=" # Change this to: base64.b64encode(YOUR_HASH.encode()).decode()
+    
+    API_ID = os.getenv("API_ID") or int(base64.b64decode(_ENC_ID).decode())
+    API_HASH = os.getenv("API_HASH") or base64.b64decode(_ENC_HASH).decode()
+    # ---------------------------------------------------
+
     SESSION_NAME = os.getenv("SESSION_NAME", "nfip_forwarder")
     TELE_BOT_TOKEN = os.getenv("TELE_BOT_TOKEN")
     

@@ -21,9 +21,17 @@ from database import SessionLocal, ForwardRule, SessionStore, engine, Base
 from rich.console import Console
 
 # --- Setup ---
+import sys
 console = Console()
 app = FastAPI()
-templates = Jinja2Templates(directory="templates")
+
+# Determine the correct path for templates
+if getattr(sys, 'frozen', False):
+    base_path = sys._MEIPASS
+else:
+    base_path = os.path.dirname(os.path.abspath(__file__))
+
+templates = Jinja2Templates(directory=os.path.join(base_path, "templates"))
 
 # Global Telethon Client and Tray Icon
 client: Optional[TelegramClient] = None
