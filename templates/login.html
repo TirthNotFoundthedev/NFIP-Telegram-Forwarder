@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+    <h2 class="text-2xl font-semibold mb-6">Telegram Account Sync</h2>
+
+    {% if is_logged_in %}
+    <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+        <p class="text-green-700">Account Connected: <span class="font-bold">@{{ username }}</span></p>
+        <p class="text-xs text-green-600 mt-2">You can now add forwarding rules for your channels.</p>
+    </div>
+    <div class="flex flex-col space-y-4">
+        <a href="/add" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-bold text-center">Manage Forwarding Rules</a>
+        <a href="/logout" class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 text-center">Logout</a>
+    </div>
+
+    {% else %}
+        {% if step == 'phone' %}
+        <form action="/login/phone" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Phone Number</label>
+                <input type="text" name="phone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="+1234567890" required>
+                <p class="text-xs text-gray-500 mt-1">Include international country code (e.g., +1 for USA, +91 for India).</p>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-bold">Request Login Code</button>
+        </form>
+
+        {% elif step == 'code' %}
+        <form action="/login/code" method="POST" class="space-y-4">
+            <input type="hidden" name="phone" value="{{ phone }}">
+            <input type="hidden" name="phone_code_hash" value="{{ phone_code_hash }}">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">SMS / Telegram Code</label>
+                <input type="text" name="code" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="12345" required autofocus>
+                <p class="text-xs text-gray-500 mt-1">Sent to your Telegram account or via SMS.</p>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-bold">Confirm Login</button>
+        </form>
+        {% elif step == 'password' %}
+        <form action="/login/password" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">2FA Cloud Password</label>
+                <input type="password" name="password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Your 2FA password" required autofocus>
+                <p class="text-xs text-gray-500 mt-1">Your Telegram Cloud Password (2FA).</p>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-bold">Login with Password</button>
+        </form>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+    <h2 class="text-2xl font-semibold mb-6">Create New Forwarding Rule</h2>
+    
+    {% if not channels %}
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+        <p class="text-yellow-700">You must <a href="/login" class="underline font-bold">Log In</a> to your Telegram account first to see your channels.</p>
+    </div>
+    {% endif %}
+
+    <form action="/add" method="POST" class="space-y-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Source Telegram Channel</label>
+            <select name="peer_id_with_name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <option value="" disabled selected>Select a channel...</option>
+                {% for channel in channels %}
+                <option value="{{ channel.id }}|{{ channel.title }}">{{ channel.title }} ({{ channel.id }})</option>
+                {% endfor %}
+            </select>
+            <p class="text-xs text-gray-500 mt-1">If your channel isn't listed, ensure you are logged in and a member of it.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">NFIP Client Token</label>
+                <input type="text" name="nfip_client_token" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" required placeholder="7-char token">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Topic Token</label>
+                <input type="password" name="nfip_topic_token" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" required placeholder="Destination token">
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <input type="checkbox" name="is_active" id="is_active" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <label for="is_active" class="text-sm text-gray-700">Activate rule immediately</label>
+        </div>
+
+        <div class="pt-4 flex justify-between">
+            <a href="/" class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600">Cancel</a>
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-bold" {{ 'disabled' if not channels }}>Create Rule</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

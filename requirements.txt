@@ -1,0 +1,11 @@
+telethon
+httpx
+python-dotenv
+rich
+fastapi
+uvicorn[standard]
+sqlalchemy
+jinja2
+python-multipart
+pystray
+Pillow
