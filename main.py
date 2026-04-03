@@ -104,6 +104,9 @@ def setup_event_handlers():
                 file_path = await msg.download_media(file=FILES_DIR)
                 if file_path:
                     downloaded_files.append(file_path)
+                    # If no text/caption, use file name as text
+                    if not text or text == "(No text)":
+                        text = os.path.basename(file_path)
             except Exception as e:
                 console.log(f"[red]Error downloading media:[/red] {e}")
 
