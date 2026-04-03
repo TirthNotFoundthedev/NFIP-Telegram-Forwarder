@@ -93,7 +93,7 @@ def setup_event_handlers():
         console.log(f"[blue]Forwarding message from {rule.source_peer_name} ({peer_id})...[/blue]")
         
         msg = event.message
-        text = msg.message or msg.caption or "(No text)"
+        text = msg.message or "(No text)"
         
         # Determine media
         downloaded_files = []
