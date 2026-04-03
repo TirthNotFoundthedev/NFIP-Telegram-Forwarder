@@ -36,6 +36,14 @@ else:
 
 templates = Jinja2Templates(directory=os.path.join(base_path, "templates"))
 
+# Determine the correct path for persistent data (next to the EXE/Script)
+if getattr(sys, 'frozen', False):
+    exe_dir = os.path.dirname(sys.executable)
+else:
+    exe_dir = os.path.dirname(os.path.abspath(__file__))
+
+FILES_DIR = os.path.join(exe_dir, "files")
+
 # Global Telethon Client and Tray Icon
 client: Optional[TelegramClient] = None
 tray_icon: Optional[pystray.Icon] = None
@@ -87,15 +95,17 @@ def setup_event_handlers():
         msg = event.message
         text = msg.message or msg.caption or "(No text)"
         
-        # Media handling
+        # Determine media
         downloaded_files = []
         if msg.media:
+            console.log(f"[blue]Downloading media from message {msg.id}...[/blue]")
             try:
-                file_path = await msg.download_media(file="tmp/")
+                # Download to files/ folder
+                file_path = await msg.download_media(file=FILES_DIR)
                 if file_path:
                     downloaded_files.append(file_path)
             except Exception as e:
-                console.log(f"[red]Media download failed:[/red] {e}")
+                console.log(f"[red]Error downloading media:[/red] {e}")
 
         # Forward
         await forward_to_api(
@@ -105,10 +115,8 @@ def setup_event_handlers():
             files=downloaded_files if downloaded_files else None
         )
 
-        # Cleanup
-        for f in downloaded_files:
-            try: os.remove(f)
-            except: pass
+        # Cleanup removed as per user request to keep files in 'files' folder
+
 
 # --- Web Routes ---
 
@@ -311,9 +319,9 @@ def setup_tray():
 
 if __name__ == "__main__":
     import uvicorn
-    # Create tmp dir if not exists
-    if not os.path.exists("tmp"):
-        os.makedirs("tmp")
+    # Create files dir if not exists
+    if not os.path.exists(FILES_DIR):
+        os.makedirs(FILES_DIR)
         
     # Start the system tray icon in a background thread
     tray_thread = threading.Thread(target=setup_tray, daemon=True)

@@ -1,6 +1,7 @@
 .env
 *.db
 tmp/
+files/
 __pycache__/
 *.session
 *.pyc
